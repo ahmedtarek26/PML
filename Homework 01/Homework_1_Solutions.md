@@ -351,7 +351,7 @@ def tennis_tournament_model(observe_AB=None, observe_BC=None, observe_AY=None):
 import pyro.infer as infer
 
 # Set the seed for reproducibility
-set_seed()
+#set_seed()
 
 # Define the observed match results
 observe_AB = torch.tensor(1.0)  # A won against B
@@ -371,7 +371,9 @@ importance_samples = importance_sampler.run()
 match_AY_samples = importance_samples.marginal("match_AY").empirical["match_AY"]
 
 # Calculate the probability of you winning against A (match_AY = 0)
-prob_you_win = 1 - match_AY_samples.float().mean().item()
+# Access the underlying samples and calculate the mean
+# Access the samples as a tensor and convert to float32
+prob_you_win = 1 - torch.mean(match_AY_samples.enumerate_support().type(torch.float32)).item()
 
 print(f"Probability of you winning against A: {prob_you_win:.4f}")
 ```
